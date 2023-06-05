@@ -46,12 +46,16 @@ void dijkstra(int dir)
 	dijk[dir][X] = 0; // 자기자신으로 오는거 0
 	priority_queue < pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
 	pq.push({ 0,X }); // 비용, 시작노드
-	
+
 	while (!pq.empty())
 	{
 		int now_cost = pq.top().first;
 		int now_vertex = pq.top().second;
 		pq.pop();
+
+		// 이미 해당 노드까지 가는데 더 적은 비용으로 갈 수 있다.
+		// 굳이 now_cost부터 현재 최단거리보다 더 큰 얘를 확인해봤자 소용없다.
+		if (dijk[dir][now_vertex] < now_cost) continue;
 
 		for (int i = 0; i < v[dir][now_vertex].size(); i++)
 		{
@@ -72,7 +76,7 @@ void solve() {
 
 	dijkstra(0); // X에서 각 노드까지 최단거리
 	dijkstra(1); // 각 노드에서 X까지 최단거리
-	
+
 	int ans = -1;
 	for (int i = 1; i <= N; i++) {
 		ans = max(ans, dijk[0][i] + dijk[1][i]);
