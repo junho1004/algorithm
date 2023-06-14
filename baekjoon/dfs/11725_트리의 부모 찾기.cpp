@@ -1,36 +1,53 @@
 #include <iostream>
 #include <vector>
-
+#define MAX_N 100010
 using namespace std;
-#define MAX 100001
 
 int N;
-int arr[MAX];
-bool visited[MAX];
-vector<int> v[MAX];
+vector<int> v[MAX_N];
+int arr[MAX_N];
 
-void dfs(int k) {
-    visited[k]=true;
-    for(int i=0;i<v[k].size();i++) {
-        int next = v[k][i];
-        if(!visited[next]) {
-            arr[next]=k;
-            dfs(next);
-        }
-    }
+void input() {
+	cin >> N;
+	int a, b;
+	for (int i = 0; i < N - 1; i++) {
+		cin >> a >> b;
+		v[a].push_back(b);
+		v[b].push_back(a);
+	}
+}
+
+void dfs(int now, int before) {
+	if (arr[now] == 0)
+	{
+		arr[now] = before;
+	}
+
+	before = now;
+
+	for (int i = 0; i < v[now].size(); i++)
+	{
+		if (arr[v[now][i]] == 0)
+		{
+			dfs(v[now][i], before);
+		}
+	}
+
+}
+
+void solve() {
+	arr[1] = 1;
+	dfs(1, 0);
+	for (int i = 2; i <= N; i++) {
+		cout << arr[i] << "\n";
+	}
 }
 
 int main() {
-    cin >> N;
-
-    for(int i=0;i<N;i++) {
-        int x,y;
-        cin >> x >> y;
-        v[x].push_back(y);
-        v[y].push_back(x);
-    }
-
-    dfs(1);
-
-    for(int i=2;i<=N;i++) cout << arr[i] << "\n";
+	cin.tie(0); cout.tie(0);
+	ios::sync_with_stdio(0);
+	freopen_s(new FILE*, "input.txt", "r", stdin);
+	input();
+	solve();
+	return 0;
 }
