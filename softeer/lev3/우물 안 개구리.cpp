@@ -1,33 +1,59 @@
-#include <bits/stdc++.h>
+#include<iostream>
+#include<vector>
 using namespace std;
 
-int n, m, a, b, answer;
+int N, M;
+int weight[100010];
+vector<int> v[100010];
 
- int main(void) {
-  ios::sync_with_stdio(0);
-  cin.tie(0);
+void input()
+{
+	cin >> N >> M;
+	for (int i = 1; i <= N; i++) {
+		cin >> weight[i];
+	}
+	int a, b;
+	for (int i = 0; i < M; i++) {
+		cin >> a >> b;
+		v[a].push_back(b);
+		v[b].push_back(a);
+	}
+}
 
-  cin >> n >> m;
+void solve()
+{
+	int ans = 0;
 
-  vector<bool> iambest(n+1, 1);
-  vector<int> power(n+1, 0);
+	for (int i = 1; i <= N; i++)
+	{
+		if (v[i].size() == 0)
+		{
+			ans++;
+			continue;
+		}
 
-  for(int i = 1; i <= n; i++) cin >> power[i];
+		int flag = 0;
+		for (int j = 0; j < v[i].size(); j++)
+		{
+			//cout << v[i][j] << " ";
+			if (weight[i] <= weight[v[i][j]])
+			{
+				flag = 0;
+				break;
+			}
+			flag = 1;
+		}
+		//cout << "\n";
+		if (flag) ans++;
+	}
+	cout << ans;
+}
 
-  while(m--){
-    cin >> a >> b;
-    if(power[a] < power[b]){
-      iambest[a] = 0;
-    }else if(power[a] > power[b]){
-      iambest[b] = 0;
-    }else{
-      iambest[a] = 0;
-      iambest[b] = 0;
-    }
-  }
-  // 아직 1인 사람(최고라고 생각) 카운팅
-   for(int i = 1; i <= n; i++) if (iambest[i] > 0) answer++;
-   
-  cout << answer;
-  return 0;
+int main(int argc, char** argv)
+{
+	cin.tie(0); cout.tie(0);
+	ios::sync_with_stdio(0);
+	input();
+	solve();
+	return 0;
 }
