@@ -135,6 +135,7 @@ void dfs(int lev) {
 	}
 
 	// 점 3개를 모두 뽑고 터친다.
+	// 시간초과 걸리니까 안터쳐도 되는 점인지 확인하는 부분이 필요할 것 같다.
 	for (int y = 0; y < N; y++) {
 		for (int x = 0; x < N; x++) {
 			path[lev] = { y,x };
