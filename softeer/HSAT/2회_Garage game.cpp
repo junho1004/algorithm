@@ -1,7 +1,7 @@
 #include<iostream>
 #include<queue>
-#include<vector>
 #include<algorithm>
+#include<string>
 using namespace std;
 
 int ditY[] = { -1,1,0,0 };
@@ -9,22 +9,12 @@ int ditX[] = { 0,0,-1,1 };
 struct Coord {
 	int y, x;
 };
-int N;
-int map[15][15];
-vector<vector<int>> v(15);
-Coord path[3];
-int ans;
+int N, ans;
+int map[45][15];
 
 void input() {
 	cin >> N;
-	int a;
-	for (int i = 0; i < 2 * N; i++) {
-		for (int j = 0; j < N; j++) {
-			cin >> a;
-			v[j].push_back(a);
-		}
-	}
-	for (int y = 0; y < N; y++) {
+	for (int y = 0; y < 3 * N; y++) {
 		for (int x = 0; x < N; x++) {
 			cin >> map[y][x];
 		}
@@ -69,7 +59,7 @@ int floodfill(Coord tar, int tmp[15][15]) {
 			used[ny][nx] = 1;
 			tmp[ny][nx] = 0; // 터진 곳은 0으로 표현
 			carCnt++;
-	
+
 			q.push({ ny,nx });
 		}
 	}
@@ -87,7 +77,7 @@ void copy_the_map(int tmp[15][15]) {
 	}
 }
 
-void drop(vector<vector<int>> &cpyV, int cpyMap[15][15])
+void drop(vector<vector<int>>& cpyV, int cpyMap[15][15])
 {
 	for (int x = 0; x < N; x++) {
 		queue<int> dropQ;
@@ -111,35 +101,23 @@ void drop(vector<vector<int>> &cpyV, int cpyMap[15][15])
 	}
 }
 
-int solve() {
-	vector<vector<int>> cpyV;
-	cpyV = v;
-	int cpyMap[15][15];
-	copy_the_map(cpyMap);
 
-	int ret = 0;
-	for (int k = 0; k < 3; k++)
+
+void dfs(int lev, int sum)
+{
+	bool visited[15][15] = { 0, };
+	int tmp[45][15];
+	memcpy(tmp, map, sizeof(map)); // tmp에 현재 map상태 복사
+
+	for (int y = 2 * N; y < 3 * N; y++)
 	{
-		ret += floodfill(path[k], cpyMap);
-		if(k < 2) drop(cpyV, cpyMap);
-	}
+		for (int x = 0; x < N; x++)
+		{
+			int now_car = tmp[y][x];
+			//빈 경우, 이미 검사한 곳
+			if (now_car == 0 || visited[y - 2 * N][x]) continue;
 
-	return ret;
-}
 
-void dfs(int lev) {
-	if (lev == 3) {
-		int score = solve();
-		ans = max(ans, score);
-		return;
-	}
-	int visited[15][15] = { 0, };
-	// 점 3개를 모두 뽑고 터친다.
-	// 시간초과 걸리니까 안터쳐도 되는 점인지 확인하는 부분이 필요할 것 같다.
-	for (int y = 0; y < N; y++) {
-		for (int x = 0; x < N; x++) {
-			path[lev] = { y,x };
-			dfs(lev + 1);
 		}
 	}
 }
@@ -147,8 +125,10 @@ void dfs(int lev) {
 int main(int argc, char** argv)
 {
 	freopen_s(new FILE*, "input.txt", "r", stdin);
+	cin.tie(0); cout.tie(0);
+	ios::sync_with_stdio(0);
 	input();
-	dfs(0);
+	dfs(0, 0);
 	//solve();
 	cout << ans;
 
