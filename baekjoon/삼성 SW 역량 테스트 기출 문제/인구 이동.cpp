@@ -1,85 +1,99 @@
-#include<iostream>
-#include<queue>
-
+#include <iostream>
+#include <queue>
+#include <cstring>
+#include <cmath>
 using namespace std;
-#define MAX 51
 
-int N, L, R, arr[MAX][MAX];
-bool visited[MAX][MAX];
-int dx[] = {0, 0, 1, -1};
-int dy[] = {1, -1, 0, 0};
+int N, L, R, ans;
+int map[51][51];
+int ditY[4] = { -1,1,0,0 };
+int ditX[4] = { 0,0,-1,1 };
+int visited[51][51];
+bool stopFlag;
 
-queue<pair<int, int>> q;
-vector<pair<int, int>> v;
+struct Coord {
+	int y, x;
+};
 
-bool flag = true; //연합여부
-int sum = 0; //평균을 구하기 위한 변수
+queue<Coord> q;
+queue<Coord> tmpQ;
 
-void bfs(pair<int, int> start) { //bfs
-	q.push(start);
-	visited[start.first][start.second] = true;
-
-	while (!q.empty()) {
-		pair<int, int> temp = q.front();
-		q.pop();
-		
-		for (int i = 0; i < 4; i++) {
-			int na = temp.first + dx[i];
-			int nb = temp.second + dy[i];
-
-            //범위 안에 있고 인구 차이가 L 이상, R 이하 여부 체킹
-			if (na >= 0 && nb >= 0 && na < N && nb < N && !visited[na][nb]) {
-                if (abs(arr[na][nb] - arr[temp.first][temp.second]) >= L &&
-				    abs(arr[na][nb] - arr[temp.first][temp.second]) <= R) {
-				        q.push({ na, nb });
-				        visited[na][nb] = true;
-
-				        v.push_back({ na, nb });
-				        sum += arr[na][nb]; //평균을 구하기 위해
-			    }
-            }
+void input() {
+	cin >> N >> L >> R;
+	for (int y = 0; y < N; y++) {
+		for (int x = 0; x < N; x++) {
+			cin >> map[y][x];
 		}
 	}
 }
 
-void clear() { //방문 초기화
-	for (int i = 0; i < N; i++) 
-		for (int j = 0; j < N; j++) 
-			visited[i][j] = false;
+void floodfill(int startY, int startX)
+{
+	q.push({ startY, startX }); // bfs구현할 큐
+	tmpQ.push({ startY, startX }); // 맵을 바꾸는데 필요한 큐
+	int sum = map[startY][startX];
+	int cnt = 1;
+
+	while (!q.empty())
+	{
+		Coord now = q.front();
+		q.pop();
+
+		for (int i = 0; i < 4; i++)
+		{
+			int ny = now.y + ditY[i];
+			int nx = now.x + ditX[i];
+			if (ny < 0 || nx < 0 || ny >= N || nx >= N) continue;
+			if (visited[ny][nx]) continue;
+			int gap = abs(map[now.y][now.x] - map[ny][nx]);
+			if (L <= gap && gap <= R)
+			{
+				stopFlag = 0; // 인구이동이 가능하다면 스탑플래그를 꺼야함
+				visited[ny][nx] = 1;
+				sum += map[ny][nx];
+				cnt++;
+				q.push({ ny,nx });
+				tmpQ.push({ ny,nx });
+			}
+		}
+	}
+
+
+	int val = sum / cnt;
+	while (!tmpQ.empty()) {
+		Coord now_country = tmpQ.front();
+		tmpQ.pop();
+		map[now_country.y][now_country.x] = val;
+	}
+}
+
+void solve()
+{
+	ans = 0;
+	while (1)
+	{
+		stopFlag = 1;
+		memset(visited, 0, sizeof(visited));
+		for (int y = 0; y < N; y++) {
+			for (int x = 0; x < N; x++) {
+				if (visited[y][x]) continue;
+				visited[y][x] = 1;
+				floodfill(y, x);
+			}
+		}
+		if (stopFlag) break; // 더이상 인구이동이 일어나지 않음.
+		ans++;
+	}
+	cout << ans;
 }
 
 int main() {
-    int days = 0; //결과 초기화
+	cin.tie(0); cout.tie(0);
+	ios::sync_with_stdio(0);
+	freopen_s(new FILE*, "input.txt", "r", stdin);
 
-	cin >> N >> L >> R;
+	input();
+	solve();
 
-	for (int i = 0; i < N; i++) //값 입력받기
-		for (int j = 0; j < N; j++)
-			cin >> arr[i][j];
-
-	while (flag) { //연합이 일어나면 계속 반복
-		flag = false; //연합 여부 초기화
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				if (!visited[i][j]) { //방문을 안 했다면
-					v.clear();
-					v.push_back({ i,j }); 
-					sum = arr[i][j];
-					bfs({ i, j });
-				}
-
-                //연합 여부
-				if (v.size() >= 2) {
-					flag = true; //연합 체크
-					for (int i = 0; i < v.size(); i++) {
-						arr[v[i].first][v[i].second] = sum / v.size(); //평균 갱신
-					}
-				}
-			}
-		}
-		if (flag) days++; //한바퀴
-
-		clear(); //초기화
-	}
-	cout << days; //결과
+	return 0;
 }
