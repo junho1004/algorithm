@@ -146,7 +146,7 @@ int main(void)
     cin.tie(NULL);
     cout.tie(NULL);
  
-    //freopen("Input.txt", "r", stdin);
+
     Solve();
  
     return 0;
