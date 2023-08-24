@@ -1,153 +1,64 @@
-#include<iostream>
-#include<algorithm>
-#include<vector>
- 
-#define endl "\n"
-#define MAX 11
+#include <iostream>
+#include <vector>
+#define MAX_N 11
 using namespace std;
- 
-int N, M, K;
-int Energy[MAX][MAX];
-int Insert_Energy[MAX][MAX];
- 
-vector<int> MAP[MAX][MAX];
- 
-int dx[] = { -1, -1, -1, 0, 0, 1, 1, 1 };
-int dy[] = { -1, 0, 1, -1, 1, -1, 0, 1 };
- 
-void Input()
-{
-    cin >> N >> M >> K;
-    for (int i = 1; i <= N; i++)
-    {
-        for (int j = 1; j <= N; j++)
-        {
-            cin >> Insert_Energy[i][j];
-            Energy[i][j] = 5;
-        }
-    }
-    
-    for (int i = 0; i < M; i++)
-    {
-        int a, b, c;
-        cin >> a >> b >> c;
-        MAP[a][b].push_back(c);
-    }
-}
- 
-void SpringAndSummer()
-{
-    for (int i = 1; i <= N; i++)
-    {
-        for (int j = 1; j <= N; j++)
-        {
-            if (MAP[i][j].size() == 0) continue;
-            
-            int Die_Tree_Energy = 0;
-            vector<int> Temp;
- 
-            sort(MAP[i][j].begin(), MAP[i][j].end());
-            for (int k = 0; k < MAP[i][j].size(); k++)
-            {
-                int Age = MAP[i][j][k];
- 
-                if (Energy[i][j] >= Age)
-                {
-                    Energy[i][j] = Energy[i][j] - Age;
-                    Temp.push_back(Age + 1);
-                }
-                else
-                {
-                    Die_Tree_Energy = Die_Tree_Energy + (Age / 2);
-                }
-            }
- 
-            MAP[i][j].clear();
-            for (int k = 0; k < Temp.size(); k++)
-            {
-                MAP[i][j].push_back(Temp[k]);
-            }
-            Energy[i][j] = Energy[i][j] + Die_Tree_Energy;
-        }
-    }    
-}
- 
-void Fall()
-{
-    for (int i = 1; i <= N; i++)
-    {
-        for (int j = 1; j <= N; j++)
-        {
-            if (MAP[i][j].size() == 0) continue;
- 
-            for (int k = 0; k < MAP[i][j].size(); k++)
-            {
-                int Age = MAP[i][j][k];
- 
-                if (Age % 5 == 0)
-                {
-                    for (int a = 0; a < 8; a++)
-                    {
-                        int nx = i + dx[a];
-                        int ny = j + dy[a];
- 
-                        if (nx >= 1 && ny >= 1 && nx <= N && ny <= N)
-                        {
-                            MAP[nx][ny].push_back(1);
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
- 
-void Winter()
-{
-    for (int i = 1; i <= N; i++)
-    {
-        for (int j = 1; j <= N; j++)
-        {
-            Energy[i][j] = Energy[i][j] + Insert_Energy[i][j];
-        }
-    }
-}
- 
-void Solution()
-{
-    for (int i = 0; i < K; i++)
-    {
-        SpringAndSummer();
-        Fall();
-        Winter();
-    }
- 
-    int Answer = 0;
-    for (int i = 1; i <= N; i++)
-    {
-        for (int j = 1; j <= N; j++)
-        {
-            Answer = Answer + MAP[i][j].size();
-        }
-    }
- 
-    cout << Answer << endl;
-}
- 
-void Solve()
-{
-    Input();
-    Solution();
-}
- 
-int main(void)
-{
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
- 
 
-    Solve();
- 
-    return 0;
+// 땅 10 x 10
+// 가장 처음에 양분은 모든 칸에 5만큼 들어있다.
+
+int N, M, K;
+vector<int> treeV[MAX_N][MAX_N]; // 나무의 나이를 저장할 벡터. 2차원 맵에 3차원 느낌으로 데이터를 쌓을 벡터
+int AddEnergyMap[MAX_N][MAX_N]; // 겨울에 추가할 에너지를 저장해 놓은 맵
+int map[MAX_N][MAX_N]; // 양분을 저장할 맵
+
+void input() {
+	cin >> N >> M >> K;
+	// 1행 1열부터 시작한다.
+	for (int y = 1; y <= N; y++) {
+		for (int x = 1; x <= N; x++) {
+			cin >> AddEnergyMap[y][x];
+			map[y][x] = 5; // 가장 처음에 양분은 모든 칸에 5만큼 들어있다.
+		}
+	}
+	int r, c, age;
+	for (int i = 0; i < M; i++) {
+		cin >> r >> c >> age;
+		treeV[r][c].push_back(age);
+	}
+
+}
+
+// 봄 : 나이만큼 양분 섭취, 나이 +1, 하나의 칸에 여러 개의 나무가 있다면 나무가 어린 나무부터 양분을 먹는다.
+// 땅에 양분이 부족해 자신의 나이만큼 양분을 먹을 수 없다면 나무는 죽는다.
+void spring() {
+
+}
+// 여름 : 죽은 나무 나이 / 2 == 양분 추가
+void summer() {
+
+}
+// 가을 : 나이가 5의 배수인 나무가 번식한다. 인접한 8개의 칸에 나이가 1인 나무가 생긴다. 땅 벗어나면 안생겨
+void autumn() {
+
+}
+// 겨울 : 땅에 양분을 추가한다. 양분의 양은 A[r][c]이며 입력으로 주어진다.
+void winter() {
+
+}
+
+void solve() {
+	while (K--) {
+		spring();
+		summer();
+		autumn();
+		winter();
+	}
+}
+
+int main() {
+	//freopen_s(new FILE*, "input.txt", "r", stdin);
+	input();
+	solve();
+
+	return 0;
 }
