@@ -26,11 +26,32 @@ void input() {
 	}
 }
 
+void moveShark() {
+
+}
+
+void eatShark() {
+
+}
+void fishing() {
+
+}
+
+void solve()
+{
+	for (int x = 0; x < W; x++) {
+		moveShark();
+		eatShark();
+		fishing();
+	}
+}
+
 int main()
 {
 	cin.tie(0); cout.tie(0);
 	ios::sync_with_stdio(0);
 	freopen_s(new FILE*, "input.txt", "r", stdin);
-
+	input();
+	solve();
 	return 0;
 }
